@@ -8,7 +8,7 @@ export default function SignUp() {
   const [gender, setGender] = useState("");
   const [userDetails, setUserDetails] = useState({});
   const navigate = useNavigate();
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (username === "" || password === "" || email === "" || gender === "") {
       alert("must enter all details");
       return;
@@ -21,12 +21,19 @@ export default function SignUp() {
         email: email,
         gender: gender,
       });
+      if(userDetails != null){
+        navigateToSignIn();
+      }
     } else {
       alert("username or password are invalid");
     }
   };
-  console.log(gender);
-  console.log(userDetails);
+  const navigateToSignIn = ()=>{
+    if(userDetails != null)
+      console.log(userDetails)
+     localStorage.setItem('user', JSON.stringify(userDetails));
+    navigate('/signin');
+  }
   return (
     <div className="grid justify-center items-center w-full h-screen">
       <div className="border border-blue-700 grid gap-4 px-6 rounded-xl py-10 h-[70vh] shadow-md">

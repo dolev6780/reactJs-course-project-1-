@@ -4,14 +4,15 @@ export default function SignIn() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user'));
   const handleSignIn = () => {
     if (username === "" || password === "") {
       alert("must enter all details");
       return;
     }
 
-    if (username.toLowerCase() === "dolev" && password === "123456") {
-      alert("you signed");
+    if (username.toLowerCase() === user.username && password === user.password) {
+     navigate('/')
     } else {
       alert("username or password are invalid");
     }
