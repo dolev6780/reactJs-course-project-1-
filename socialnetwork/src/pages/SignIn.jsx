@@ -1,21 +1,28 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword  } from "firebase/auth";
+import { auth } from "../firebase";
 export default function SignIn() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
   const handleSignIn = () => {
-    if (username === "" || password === "") {
+    if (email === "" || password === "") {
       alert("must enter all details");
       return;
     }
 
-    if (username.toLowerCase() === user.username && password === user.password) {
-     navigate('/')
-    } else {
-      alert("username or password are invalid");
-    }
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      // Signed in 
+      const user = userCredential.user;
+      navigate('/');
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+    });
   };
 
   return (
@@ -28,9 +35,9 @@ export default function SignIn() {
         <div className="grid justify-center ">
           <input
             type="text"
-            placeholder="User Name"
+            placeholder="Email"
             onChange={(e) => {
-              setUsername(e.target.value);
+              setEmail(e.target.value);
             }}
             className="border-2 border-blue-700 px-2 rounded-full transition-all placeholder:text-black h-10"
           />

@@ -5,8 +5,7 @@ import CircleAvatar from './CircleAvatar';
 export default function NavBar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isToolTipOpen, setIsToolTipOpen] = useState(false);
-    const user = JSON.parse(localStorage.getItem('user'));
-    const firstLetter = user?.username.charAt(0);
+   
 
     const tooltipTimeoutRef = useRef(null); // Ref to store the timeout ID
 
@@ -43,9 +42,7 @@ export default function NavBar() {
                 onMouseLeave={handleMouseLeave}
             >
                 <CircleAvatar
-                    firstLetter={firstLetter}
                     handleClick={handleMenu}
-                    username={user?.username}
                     bg="bg-blue-400"
                 />
                 {/* Tooltip */}
@@ -62,13 +59,14 @@ export default function NavBar() {
                 className={`absolute right-1 top-[4.2rem] bg-blue-400 grid justify-center items-center w-40 py-2 rounded-md shadow-md ${isMenuOpen ? 'block' : 'hidden'}`}
             >
                 {/* Title */}
-                <h1>{user?.username}</h1>
+                {/* <h1>{user?.username}</h1> */}
                 {/* Avatar */}
                 <div className="m-auto">
-                    <CircleAvatar firstLetter={firstLetter} username={user?.username} bg="bg-blue-700" />
+                    <CircleAvatar 
+                     bg="bg-blue-700" />
                 </div>
                 {/* Email */}
-                <h2>{user.email}</h2>
+                {/* <h2>{user.email}</h2> */}
                 <hr className="h-0.5 w-36" />
                 {/* Buttons */}
                 <div className="grid">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../firebase";
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -8,30 +9,38 @@ export default function SignUp() {
   const [gender, setGender] = useState("");
   const [userDetails, setUserDetails] = useState({});
   const navigate = useNavigate();
+
+
+
+
   const handleSignUp = async () => {
+    // check if inputs are empty
     if (username === "" || password === "" || email === "" || gender === "") {
       alert("must enter all details");
       return;
     }
+// validate username and password
+    if (email.length >= 4 && password.length >= 6) {
 
-    if (username.length >= 4 && password.length >= 6) {
-      setUserDetails({
-        username: username,
-        password: password,
-        email: email,
-        gender: gender,
-      });
-      if(userDetails != null){
-        navigateToSignIn();
-      }
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+          // Signed up 
+          const user = userCredential.user;
+          navigate('/signin');
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
+
     } else {
       alert("username or password are invalid");
     }
   };
-  const navigateToSignIn = ()=>{
-    if(userDetails != null)
+  const navigateToSignIn = () => {
+    if (userDetails != null)
       console.log(userDetails)
-     localStorage.setItem('user', JSON.stringify(userDetails));
+    localStorage.setItem('user', JSON.stringify(userDetails));
     navigate('/signin');
   }
   return (
