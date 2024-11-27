@@ -1,86 +1,94 @@
-import React, { useState, useRef } from 'react';
-import logo from '../assets/logosn.png';
-import CircleAvatar from './CircleAvatar';
+import React, { useState, useRef, useEffect } from "react";
+import logo from "../assets/logosn.png";
+import CircleAvatar from "./CircleAvatar";
+import { auth } from "../firebase";
+import { signOut } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function NavBar() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isToolTipOpen, setIsToolTipOpen] = useState(false);
-   
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [name, setName] = useState("");
+  const navigate = useNavigate();
+  const user = auth?.currentUser;
 
-    const tooltipTimeoutRef = useRef(null); // Ref to store the timeout ID
+  const handleMenu = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
 
-    const handleMenu = () => {
+  useEffect(() => {
+    if (user) {
+      setName(user?.email);
+    }
+  }, [user]);
+
+  const handleSignOut = () => {
+    signOut(auth)
+      .then(() => {
+        setName("");
+        navigate("/signin");
         setIsMenuOpen(!isMenuOpen);
-    };
+      })
+      .catch((err) => {
+        console.error("Error signing out:", err);
+      });
+  };
 
-    const handleMouseOver = () => {
-        tooltipTimeoutRef.current = setTimeout(() => {
-            setIsToolTipOpen(true);
-        }, 1000);
-    };
+  return (
+    <div className="flex items-center justify-between px-2 bg-blue-700 shadow-lg relative">
+      {/* Left: Logo */}
+      <div>
+        <img className="w-16 h-16 p-2" src={logo} alt="Logo" />
+      </div>
 
-    const handleMouseLeave = () => {
-        clearTimeout(tooltipTimeoutRef.current); 
-        setIsToolTipOpen(false);
-    };
+      {/* Middle: Title */}
+      <div>
+        <h1 className="text-2xl font-serif">Social Network</h1>
+      </div>
 
-    return (
-        <div className="flex items-center justify-between px-2 bg-blue-700 shadow-lg relative">
-            {/* Left: Logo */}
-            <div>
-                <img className="w-16 h-16 p-2" src={logo} alt="Logo" />
-            </div>
+      {/* Right: Avatar and Tooltip */}
+      <div className="relative">
+        <CircleAvatar handleClick={handleMenu} bg="bg-blue-400" />
+      </div>
 
-            {/* Middle: Title */}
-            <div>
-                <h1 className="text-2xl font-serif">Social Network</h1>
-            </div>
-            {/* Right: Avatar and Tooltip */}
-            <div
-                className="relative"
-                onMouseOver={handleMouseOver}
-                onMouseLeave={handleMouseLeave}
-            >
-                <CircleAvatar
-                    handleClick={handleMenu}
-                    bg="bg-blue-400"
-                />
-                {/* Tooltip */}
-                {/* <div
-                    className={`absolute bg-orange-100 p-1 rounded-md z-50 ${isToolTipOpen ? 'block' : 'hidden'} transition-all duration-300`}
-                  
-                >
-                    {user?.username}
-                </div> */}
-            </div>
-
-            {/* Menu */}
-            <div
-                className={`absolute right-1 top-[4.2rem] bg-blue-400 grid justify-center items-center w-40 py-2 rounded-md shadow-md ${isMenuOpen ? 'block' : 'hidden'}`}
-            >
-                {/* Title */}
-                {/* <h1>{user?.username}</h1> */}
-                {/* Avatar */}
-                <div className="m-auto">
-                    <CircleAvatar 
-                     bg="bg-blue-700" />
-                </div>
-                {/* Email */}
-                {/* <h2>{user.email}</h2> */}
-                <hr className="h-0.5 w-36" />
-                {/* Buttons */}
-                <div className="grid">
-                    <button className="bg-white mt-2 w-1/2 m-auto rounded-md py-1 text-blue-700 hover:bg-opacity-80">Settings</button>
-                    <button
-                        onClick={() => {
-                            // Handle Sign Out
-                        }}
-                        className="bg-white mt-2 w-1/2 m-auto rounded-md py-1 text-blue-700 hover:bg-opacity-80"
-                    >
-                        Sign Out
-                    </button>
-                </div>
-            </div>
+      {/* Menu */}
+      <div
+        className={`absolute right-1 top-[4.2rem] bg-blue-400 grid justify-center items-center w-40 py-2 rounded-md shadow-md ${
+          isMenuOpen ? "block" : "hidden"
+        }`}
+      >
+        {/* Avatar */}
+        <div className="m-auto">
+          <CircleAvatar bg="bg-blue-700" />
         </div>
-    );
+        {/* Email */}
+        <h1>{user?.email || "Guest"}</h1>
+        <hr className="h-0.5 w-36" />
+
+        {/* Buttons */}
+        <div className="grid">
+          <button className="bg-white mt-2 w-1/2 m-auto rounded-md py-1 text-blue-700 hover:bg-opacity-80">
+            Settings
+          </button>
+          {user ? (
+            <button
+              onClick={handleSignOut}
+              className="bg-white mt-2 w-1/2 m-auto rounded-md py-1 text-blue-700 hover:bg-opacity-80"
+            >
+              Sign Out
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                navigate("/signin");
+                setIsMenuOpen(!isMenuOpen);
+              }}
+              className="bg-white mt-2 w-1/2 m-auto rounded-md py-1 text-blue-700 hover:bg-opacity-80"
+            >
+              Sign In
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
