@@ -7,7 +7,6 @@ export default function CircleAvatar({ handleClick, bg }) {
         const checkAuthChange =  onAuthStateChanged(auth, (user) => {
             if (user) {
               setName(user?.email);
-           
             } else {
              setName("?");
             }

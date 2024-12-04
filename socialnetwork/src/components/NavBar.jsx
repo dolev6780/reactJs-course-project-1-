@@ -32,11 +32,14 @@ export default function NavBar() {
         console.error("Error signing out:", err);
       });
   };
-
+  const goToProfile = ()=>{
+    navigate(`/profile/${user.uid}`);
+    setIsMenuOpen(!isMenuOpen);
+  }
   return (
     <div className="flex items-center justify-between px-2 bg-blue-700 shadow-lg relative">
       {/* Left: Logo */}
-      <div>
+      <div className="cursor-pointer" onClick={()=>{navigate('/')}}>
         <img className="w-16 h-16 p-2" src={logo} alt="Logo" />
       </div>
 
@@ -58,7 +61,7 @@ export default function NavBar() {
       >
         {/* Avatar */}
         <div className="m-auto">
-          <CircleAvatar bg="bg-blue-700" />
+          <CircleAvatar bg="bg-blue-700" handleClick={goToProfile} />
         </div>
         {/* Email */}
         <h1>{user?.email || "Guest"}</h1>

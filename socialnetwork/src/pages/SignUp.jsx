@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 export default function SignUp() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
+  const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [userDetails, setUserDetails] = useState({});
   const navigate = useNavigate();
-
-
-
 
   const handleSignUp = async () => {
     // check if inputs are empty
@@ -19,30 +17,49 @@ export default function SignUp() {
       alert("must enter all details");
       return;
     }
-// validate username and password
+    // validate username and password
     if (email.length >= 4 && password.length >= 6) {
-
       createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-          // Signed up 
+        .then((userCredential) => {
           const user = userCredential.user;
-          navigate('/signin');
+          const flag = handleCreateUser(user);
+          if (flag) {
+            navigate("/");
+          } else {
+            alert("Error creating user");
+          }
         })
         .catch((error) => {
           const errorCode = error.code;
           const errorMessage = error.message;
         });
-
     } else {
       alert("username or password are invalid");
     }
   };
-  const navigateToSignIn = () => {
-    if (userDetails != null)
-      console.log(userDetails)
-    localStorage.setItem('user', JSON.stringify(userDetails));
-    navigate('/signin');
-  }
+  const handleCreateUser = async (user) => {
+    try {
+      if (user) {
+        const docRef = doc(db, "users", user.uid);
+        await setDoc(docRef, {
+          userName: username,
+          email: email,
+          gender: gender,
+          age: age,
+          uid: user.uid,
+        });
+        console.log("User created successfully.");
+        return true;
+      } else {
+        console.error("No user found.");
+        return false;
+      }
+    } catch (e) {
+      console.error("Error adding document: ", e);
+      return false;
+    }
+  };
+
   return (
     <div className="grid justify-center items-center w-full h-screen">
       <div className="border border-blue-700 grid gap-4 px-6 rounded-xl py-10 h-[70vh] shadow-md">
@@ -72,6 +89,16 @@ export default function SignUp() {
             placeholder="Email"
             onChange={(e) => {
               setEmail(e.target.value);
+            }}
+            className="border-2 border-blue-700 px-2 rounded-full transition-all placeholder:text-black h-10"
+          />
+          <input
+            type="number"
+            min={6}
+            max={99}
+            placeholder="Age"
+            onChange={(e) => {
+              setAge(e.target.value);
             }}
             className="border-2 border-blue-700 px-2 rounded-full transition-all placeholder:text-black h-10"
           />

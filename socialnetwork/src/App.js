@@ -8,8 +8,8 @@ import {
   Route,
 } from "react-router-dom";
 import NavBar from "./components/NavBar";
+import Profile from "./pages/Profile";
 function App() {
-  const user = false;
   return (
     <div className="App">
       <Router>
@@ -18,6 +18,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/profile/:userId" element={<Profile />} />
         </Routes>
       </Router>
     </div>
