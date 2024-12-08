@@ -4,13 +4,14 @@ import CircleAvatar from "./CircleAvatar";
 import { auth } from "../firebase";
 import { signOut } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-
+import ThemeButton from "./ThemeButton";
+import { useTheme } from "../context/ThemeContext";
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [name, setName] = useState("");
   const navigate = useNavigate();
   const user = auth?.currentUser;
-
+  const { theme, toggleTheme } = useTheme();
   const handleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -32,17 +33,30 @@ export default function NavBar() {
         console.error("Error signing out:", err);
       });
   };
-  const goToProfile = ()=>{
+  const goToProfile = () => {
     navigate(`/profile/${user.uid}`);
     setIsMenuOpen(!isMenuOpen);
-  }
+  };
   return (
-    <div className="flex items-center justify-between px-2 bg-blue-700 shadow-lg relative">
+    <div
+      className={`flex items-center justify-between px-2 bg-blue-700 shadow-lg relative ${
+        theme === "light" ? "text-black" : "text-white"
+      }`}
+    >
       {/* Left: Logo */}
-      <div className="cursor-pointer" onClick={()=>{navigate('/')}}>
-        <img className="w-16 h-16 p-2" src={logo} alt="Logo" />
+      <div className="flex items-center justify-center">
+        <div
+          className="cursor-pointer"
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <img className="w-16 h-16 p-2" src={logo} alt="Logo" />
+        </div>
+        <div className="relative left-4">
+          <ThemeButton />
+        </div>
       </div>
-
       {/* Middle: Title */}
       <div>
         <h1 className="text-2xl font-serif">Social Network</h1>

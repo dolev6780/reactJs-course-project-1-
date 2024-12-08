@@ -3,10 +3,12 @@ import AddPost from "../components/AddPost";
 import AddPostButton from "../components/AddPostButton";
 import { db } from "../firebase";
 import { collection, getDocs, onSnapshot } from "firebase/firestore";
-export default function Home() {
+import Posts from "./Posts";
+import { useTheme } from "../context/ThemeContext";
+export default function Home({data}) {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [posts, setPosts] = useState([]);
-
+  const {theme, toggleTheme} = useTheme();
   const fetchPosts = async () => {
     try {
       const postsCollection = collection(db, "posts");
@@ -32,8 +34,9 @@ export default function Home() {
   }, []);
   console.log(posts);
   return (
-    <div className="h-screen w-full">
-      <AddPostButton setModalIsOpen={setModalIsOpen} />
+    <div className={`h-screen w-full ${theme === "light" ? "bg-white text-black" : "bg-neutral-800 text-white"} transition-all duration-100`}>
+      <Posts data={data}/>
+      {/* <AddPostButton setModalIsOpen={setModalIsOpen} />
       <div
         className={`border w-96 m-auto border-black rounded-lg h-64 mt-64 ${
           modalIsOpen ? "" : "hidden"
@@ -50,7 +53,7 @@ export default function Home() {
             </div>
           );
         })}
-      </div>
+      </div> */}
     </div>
   );
 }
